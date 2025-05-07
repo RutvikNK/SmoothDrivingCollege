@@ -36,6 +36,7 @@ model Employee {
 
   assigned_vehicle AssignedVehicles? @relation(name: "Instructor")
   employee_pos EmployeePositions? @relation(name: "EmployeeHoldingPosition")
+  client Client[] @relation(name: "ClientInstructor")
 }
 
 model Positions {
@@ -72,6 +73,21 @@ model AssignedVehicles {
   assigned_vehicle_no String @db.Char(8) @unique
 
   @@id(name: "InstructorAssignedVehicle", [inst_id, assigned_vehicle_no])
+}
+
+model Client {
+  client_id Int @id @default(autoincrement())
+  client_name String @db.VarChar(100)
+  client_gender String @db.VarChar(10)
+  client_phone_no String @db.Char(10)
+  client_email String @db.VarChar(100)
+  
+  instructor Employee @relation(name: "ClientInstructor", fields: [client_inst_id], references: [emp_id])
+  client_inst_id Int 
+
+  client_emergency_contact_name String @db.VarChar(100)
+  client_emergency_contact_no String @db.Char(10)
+  client_interviewed Boolean @default(false)
 }
 
 enum POSITION {

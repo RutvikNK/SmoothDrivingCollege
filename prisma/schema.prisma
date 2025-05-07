@@ -20,7 +20,12 @@ model Office {
   office_city String @db.VarChar(25)
   office_county String @db.VarChar(50)
   office_postal_code String @db.VarChar(10)
-  office_manager_id Int 
+  office_manager_id Int
+
+  registered_clients ClientRegistrations[] @relation(name: "ClientRegisteredOffice")
+  interviews Interview[] @relation(name: "InterviewLocation")
+
+  @@unique([office_id, office_city])
 }
 
 model Employee {
@@ -36,6 +41,9 @@ model Employee {
 
   assigned_vehicle AssignedVehicles? @relation(name: "Instructor")
   employee_pos EmployeePositions? @relation(name: "EmployeeHoldingPosition")
+  clients Client[] @relation(name: "ClientInstructor")
+  interviews Interview[] @relation(name: "InterviewingInstructor")
+  meetings Meeting[] @relation(name: "MeetingInstructor")
 }
 
 model Positions {
@@ -62,6 +70,7 @@ model Vehicle {
   vehicle_last_inspection DateTime @db.Date()
 
   assigned_vehicle AssignedVehicles? @relation(name: "AssignedVehicle")
+  meetings Meeting[] @relation(name: "Meeting Vehicle")
 }
 
 model AssignedVehicles {
@@ -71,7 +80,77 @@ model AssignedVehicles {
   vehicle Vehicle @relation(name: "AssignedVehicle", fields: [assigned_vehicle_no], references: [vehicle_license_no])
   assigned_vehicle_no String @db.Char(8) @unique
 
-  @@id(name: "InstructorAssignedVehicle", [inst_id, assigned_vehicle_no])
+  @@id(name: "InstructorAssignedVehicleKey", [inst_id, assigned_vehicle_no])
+}
+
+model Client {
+  client_id Int @id @default(autoincrement())
+  client_name String @db.VarChar(100)
+  client_gender String @db.VarChar(10)
+  client_phone_no String @db.Char(10)
+  client_email String @db.VarChar(100)
+  
+  instructor Employee @relation(name: "ClientInstructor", fields: [client_inst_id], references: [emp_id])
+  client_inst_id Int 
+
+  client_emergency_contact_name String @db.VarChar(100)
+  client_emergency_contact_no String @db.Char(10)
+  client_interviewed Boolean @default(false)
+
+  office ClientRegistrations? @relation(name: "RegisteredClient")
+  interview Interview[] @relation(name: "InterviewClient")
+  meeting Meeting[] @relation(name: "MeetingClient")
+}
+
+model ClientRegistrations {
+  client Client @relation(name: "RegisteredClient", fields: [client_id], references: [client_id])
+  client_id Int @unique
+
+  office Office @relation(name: "ClientRegisteredOffice", fields: [client_reg_office_id], references: [office_id])
+  client_reg_office_id Int
+
+  @@id(name: "ClientRegistrationKey", [client_id, client_reg_office_id])
+}
+
+model Interview {
+  client Client @relation(name: "InterviewClient", fields: [interv_client_id], references: [client_id])
+  interv_client_id Int 
+
+  instructor Employee @relation(name: "InterviewingInstructor", fields: [interv_inst_id], references: [emp_id])
+  interv_inst_id Int
+
+  office Office @relation(name: "InterviewLocation", fields: [interv_location_id, interv_location], references: [office_id, office_city])
+  interv_location_id Int
+  interv_location String @db.VarChar(25)
+  
+  interv_date DateTime @db.Date()
+
+  @@id(name: "InterviewKey", [interv_client_id, interv_inst_id])
+}
+
+model Meeting {
+  client Client @relation(name: "MeetingClient", fields: [meeting_client_id], references: [client_id])
+  meeting_client_id Int
+
+  instructor Employee @relation(name: "MeetingInstructor", fields: [meeting_inst_id], references: [emp_id])
+  meeting_inst_id Int
+
+  vehicle Vehicle @relation(name: "Meeting Vehicle", fields: [meeting_vehicle_no], references: [vehicle_license_no])
+  meeting_vehicle_no String @db.Char(8)
+
+  meeting_start DateTime @db.DateTime()
+  meeting_end DateTime @db.DateTime()
+  meeting_type MEETING
+  meeting_notes String @db.VarChar(250)
+  meeting_mileage Int
+
+  @@id(name: "MeetingKey", [meeting_client_id, meeting_inst_id, meeting_start])
+}
+
+enum MEETING {
+  LESSON
+  WRITTEN_EXAM
+  DRIVING_EXAM
 }
 
 enum POSITION {

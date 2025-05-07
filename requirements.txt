@@ -1,0 +1,5 @@
+uv
+python-dotenv
+mysql-connector-python
+pytest
+pytest-cov

@@ -22,6 +22,7 @@ model Office {
   office_postal_code String @db.VarChar(10)
   office_manager_id Int
 
+  emps_work_at WorksAt[] @relation(name: "OfficeWorkedAt")
   registered_clients ClientRegistrations[] @relation(name: "ClientRegisteredOffice")
   interviews Interview[] @relation(name: "InterviewLocation")
 
@@ -39,11 +40,22 @@ model Employee {
   emp_manager_id Int 
   Employee Employee[] @relation(name: "ManagerId")
 
+  works_at WorksAt? @relation(name: "EmployeeWorksAt")
   assigned_vehicle AssignedVehicles? @relation(name: "Instructor")
   employee_pos EmployeePositions? @relation(name: "EmployeeHoldingPosition")
   clients Client[] @relation(name: "ClientInstructor")
   interviews Interview[] @relation(name: "InterviewingInstructor")
   meetings Meeting[] @relation(name: "MeetingInstructor")
+}
+
+model WorksAt {
+  employee Employee @relation(name: "EmployeeWorksAt", fields: [emp_id], references: [emp_id])
+  emp_id Int @unique
+
+  office Office @relation(name: "OfficeWorkedAt", fields: [office_id], references: [office_id])
+  office_id Int
+
+  @@id(name: "EmployeeWorksAtKey", [emp_id, office_id])
 }
 
 model Positions {

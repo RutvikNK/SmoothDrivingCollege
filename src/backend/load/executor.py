@@ -12,6 +12,12 @@ class DatabaseExecutor:
         self.__delete_command: DeleteCommand = DeleteCommand(db)
         self.__update_command: UpdateCommand = UpdateCommand(db)
 
+    def close(self):
+        """
+        Close the database connection
+        """
+        self.__db.close()
+    
     def insert_row(self, table_name: str, data: dict):
         """
         Insert row(s) into a table
@@ -42,6 +48,9 @@ class DatabaseExecutor:
     
     def call_proc(self, proc_name: str, params: list):
         return self.__db.call_proc(proc_name, params)
+    
+    def execute_query(self, query: str):
+        return self.__db.execute(query)
 
     def retrieve_all(self, table_name: str):
         return self.__db.retrieve_all(table_name)

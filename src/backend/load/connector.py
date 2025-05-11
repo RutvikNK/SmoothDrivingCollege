@@ -14,6 +14,7 @@ class SQLConnector:
             port = port
         )
 
+
     def execute(self, query: str, params=None):
         cursor = self.db.cursor(buffered=True)
 
@@ -33,11 +34,13 @@ class SQLConnector:
             print(query)
             print("Query executed successfully\n")
             self.commit()
+            cursor.close()
             return True
         except Exception as e:
             self.rollback()
             print(f"{e}")
             print("Query execution failed\n")
+            cursor.close()
             return False
 
     def call_proc(self, proc_name: str, params: list):
@@ -46,11 +49,13 @@ class SQLConnector:
             result = cursor.callproc(proc_name, params)
             print("Procedure call successful\n")
             self.commit()
+            cursor.close()
             return result
         except Exception as e:
             self.rollback()
             print(f"{e}")
             print("Procedure call failed\n")
+            cursor.close()
             return False
 
     def commit(self) -> None:
@@ -58,6 +63,12 @@ class SQLConnector:
 
     def rollback(self) -> None:
         self.db.rollback()
+
+    def close(self) -> None:
+        """
+        Closes the database connection
+        """
+        self.db.close()
 
     def retrieve_all(self, table_name: str):
         """

@@ -11,137 +11,11 @@ from backend.data.sdc_data import (
     Interview,
     Meeting
 )
-
-def verify_phone_number(phone_number: str) -> bool:
-    """
-    Verifies if a phone number is valid
-    :param phone_number: str: The phone number to verify
-    :return: bool: True if the phone number is valid, False otherwise
-    """
-    if len(phone_number) != 10:  # check if the phone number is 10 digits long
-        return False
-
-    for char in phone_number:  # check if all characters in the phone number are digits
-        if not char.isdigit():
-            return False
-
-    return True
-
-def verify_email(email: str) -> bool:
-    """
-    Verifies if an email address is valid
-    :param email: str: The email address to verify
-    :return: bool: True if the email address is valid, False otherwise
-    """
-    if "@" not in email or "." not in email:  # check if the email address contains an @ and a .
-        return False
-    
-    if not email.endswith(".com") and not email.endswith(".org"):  
-        # check if the email address ends with .com or .org
-        return False
-    
-    return True
-
-def verify_date(date: str) -> bool:
-    try:
-        year, month, day = date.split("-")
-        year, month, day = int(year), int(month), int(day)
-    except ValueError:
-        return False
-    
-    if year < 0 or month < 1 or month > 12 or day < 1 or day > 31:
-        return False
-    
-    return True
-
-class SDCApp:
-    """
-    LibraryApp class, the main class for the library application. Responsible for creating the main window
-    and managing the tabs for the application. Holds tabs for Books, Members, and Borrowings.
-    """
-    def __init__(self, app_name: str, window_width: int=500, window_height: int=500) -> None:
-        self.__root = tk.Tk()
-        self.__root.title(app_name)
-        self.set_window_size(window_width, window_height)
-        self.__notebook = ttk.Notebook(self.__root)
-
-        self.__db_exec: DatabaseExecutor
-        self.__username: str = ""
-        
-        self.__admin_portal: AdminPortal
-
-        self.handle_login()
-        # self.__instructors_tab.create_vehicles_tab()c
-        # self.__instructors_tab.create_members_tab()
-        # self.__borrow_tab.create_borrow_tab()
-        self.__notebook.pack(expand=1, fill="both")
-
-    def set_window_size(self, width: int, height: int) -> None:
-        """
-        Sets the size of the main window
-        :param width: int: The width of the window
-        :param height: int: The height of the window
-        """
-        self.__root.geometry(f"{width}x{height}")
-
-    def handle_login(self) -> None:
-        def __login():
-            """
-            Handles the login process. Checks if the username and password are correct.
-            If they are, closes the login window and opens the main window.
-            """
-            username = username_entry.get()
-            password = password_entry.get()
-
-            try:
-                db_conn = SQLConnector(
-                    db_name="sdc-main",
-                    port=33069,
-                    host="localhost",
-                    user=username,
-                    password=password
-                )
-            except Exception as e:
-                error_label.config(text=str(e))
-                error_label.pack()
-                return 
-            
-            self.__db_exec = DatabaseExecutor(db_conn)
-            self.__username = username
-            error_label.config(text="Login successful", fg="green")
-            error_label.pack()
-
-            if self.__username == "admin_global":
-                username_entry.pack_forget()
-                password_entry.pack_forget()
-                username_label.pack_forget()
-                password_label.pack_forget()
-                login_button.pack_forget()
-                error_label.pack_forget()
-
-                self.__admin_portal = AdminPortal(self.__db_exec, self.__notebook)
-
-
-        username_label = tk.Label(self.__notebook, text="Username")
-        username_entry = tk.Entry(self.__notebook)
-        username_label.pack()
-        username_entry.pack()
-
-        password_label = tk.Label(self.__notebook, text="Password")
-        password_entry = tk.Entry(self.__notebook, show="*")
-        password_label.pack()
-        password_entry.pack()
-
-        login_button = tk.Button(self.__notebook, text="Login", command=__login)
-        login_button.pack()
-
-        error_label = tk.Label(self.__notebook, text="", fg="red")
-
-    def mainloop(self) -> None:
-        """
-        Starts the mainloop for the application.
-        """
-        self.__root.mainloop()
+from validators import (
+    verify_phone_number,
+    verify_email,
+    verify_date
+)
 
 class AdminPortal:
     def __init__(self, exec: DatabaseExecutor, notebook: ttk.Notebook) -> None:
@@ -744,50 +618,50 @@ class ManageVehiclesTab:
         self.__active_menu = menu_to_show
         if self.__active_menu == "add":  # show add vehicle submenu
             self.__vehicle_license_no_label = tk.Label(self.__vehicles_tab, text="License Plate No*: ")
-            self.__vehicle_license_no_label.place(relx=0.39, rely=0.2, anchor=tk.CENTER)
+            self.__vehicle_license_no_label.place(relx=0.35, rely=0.2, anchor=tk.CENTER)
             self.__vehicle_license_no_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_license_no_entry.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
-            self.__vehicle_make_label = tk.Label(self.__vehicles_tab, text="Vehicle Make: ")
-            self.__vehicle_make_label.place(relx=0.39, rely=0.3, anchor=tk.CENTER)
+            self.__vehicle_make_label = tk.Label(self.__vehicles_tab, text="Vehicle Make*: ")
+            self.__vehicle_make_label.place(relx=0.35, rely=0.3, anchor=tk.CENTER)
             self.__vehicle_make_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_make_entry.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
-            self.__vehicle_model_label = tk.Label(self.__vehicles_tab, text="Vehicle Model: ")
-            self.__vehicle_model_label.place(relx=0.39, rely=0.25, anchor=tk.CENTER)
+            self.__vehicle_model_label = tk.Label(self.__vehicles_tab, text="Vehicle Model*: ")
+            self.__vehicle_model_label.place(relx=0.35, rely=0.25, anchor=tk.CENTER)
             self.__vehicle_model_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_model_entry.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
 
-            self.__vehicle_year_label = tk.Label(self.__vehicles_tab, text="Vehicle Year: ")
-            self.__vehicle_year_label.place(relx=0.39, rely=0.35, anchor=tk.CENTER)
+            self.__vehicle_year_label = tk.Label(self.__vehicles_tab, text="Vehicle Year*: ")
+            self.__vehicle_year_label.place(relx=0.35, rely=0.35, anchor=tk.CENTER)
             self.__vehicle_year_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_year_entry.place(relx=0.5, rely=0.35, anchor=tk.CENTER)
 
-            self.__vehicle_color_label = tk.Label(self.__vehicles_tab, text="Vehicle Color: ")
-            self.__vehicle_color_label.place(relx=0.39, rely=0.4, anchor=tk.CENTER)
+            self.__vehicle_color_label = tk.Label(self.__vehicles_tab, text="Vehicle Color*: ")
+            self.__vehicle_color_label.place(relx=0.35, rely=0.4, anchor=tk.CENTER)
             self.__vehicle_color_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_color_entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
-            self.__vehicle_inspection_date_label = tk.Label(self.__vehicles_tab, text="Last Inspected On: ")
-            self.__vehicle_inspection_date_label.place(relx=0.39, rely=0.3, anchor=tk.CENTER)
+            self.__vehicle_inspection_date_label = tk.Label(self.__vehicles_tab, text="Last Inspected On*: ")
+            self.__vehicle_inspection_date_label.place(relx=0.35, rely=0.3, anchor=tk.CENTER)
             self.__vehicle_inspection_date_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_inspection_date_entry.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
-            self.__add_vehicle_button = tk.Button(self.__vehicles_tab, text="Add Book")
+            self.__add_vehicle_button = tk.Button(self.__vehicles_tab, text="Add Vehicle")
             self.__add_vehicle_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         elif self.__active_menu == "update":  # show update vehicle submenu
             self.__vehicle_license_no_label = tk.Label(self.__vehicles_tab, text="License Plate No*: ")
-            self.__vehicle_license_no_label.place(relx=0.39, rely=0.2, anchor=tk.CENTER)
+            self.__vehicle_license_no_label.place(relx=0.35, rely=0.2, anchor=tk.CENTER)
             self.__vehicle_license_no_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_license_no_entry.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
-            self.__vehicle_inspection_date_label = tk.Label(self.__vehicles_tab, text="Last Inspected On: ")
-            self.__vehicle_inspection_date_label.place(relx=0.39, rely=0.3, anchor=tk.CENTER)
+            self.__vehicle_inspection_date_label = tk.Label(self.__vehicles_tab, text="Last Inspected On*: ")
+            self.__vehicle_inspection_date_label.place(relx=0.35, rely=0.3, anchor=tk.CENTER)
             self.__vehicle_inspection_date_entry = tk.Entry(self.__vehicles_tab)
             self.__vehicle_inspection_date_entry.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
-            self.__update_date_button = tk.Button(self.__vehicles_tab, text="Make Available")
-            self.__update_date_button.place(relx=0.4, rely=0.3, anchor=tk.CENTER)
+            self.__update_date_button = tk.Button(self.__vehicles_tab, text="Update Inspection Date")
+            self.__update_date_button.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
         elif self.__active_menu == "view":  # show view vehicle submenu
             self.__table = ttk.Treeview(self.__vehicles_tab, columns=("License Plate", "Make", "Model", "Year", "Color", "Last Inspected On"), show="headings")
@@ -844,6 +718,13 @@ class ManageVehiclesTab:
             color = self.__vehicle_color_entry.get()
             last_inspection = self.__vehicle_inspection_date_entry.get()
 
+            if not license_no or not make or not model or not year or not color or not last_inspection:
+                # display an error message if any field is empty
+                self.__result_text.insert(tk.END, "All fields are required", "center")
+                self.__result_text.config(state=tk.DISABLED)
+                self.__result_text.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+                return
+
             new_vehicle = Vehicle(
                 vehicle_license_no=license_no,
                 vehicle_make=make,
@@ -877,7 +758,23 @@ class ManageVehiclesTab:
             """
             self.__result_text.insert(tk.END, "", "center")  # clear the result text box
 
-            data = {"vehicle_last_inspection": f"'{self.__vehicle_inspection_date_entry.get()}'", "vehicle_license_no": f"'{self.__vehicle_license_no_entry.get()}'"}
+            date = self.__vehicle_inspection_date_entry.get()
+            license_no = self.__vehicle_license_no_entry.get()
+
+            if not date or not license_no:
+                # display an error message if any field is empty
+                self.__result_text.insert(tk.END, "All fields are required", "center")
+                self.__result_text.config(state=tk.DISABLED)
+                self.__result_text.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+                return
+            
+            if not verify_date(date):  # checks date format, sends an error if invalid
+                self.__result_text.insert(tk.END, "Invalid Date Format", "center")
+                self.__result_text.config(state=tk.DISABLED)
+                self.__result_text.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+                return
+
+            data = {"vehicle_last_inspection": f"'{date}'", "vehicle_license_no": f"'{license_no}'"}
             if self.__exec.update_row("Vehicle", data):  # update the book in the database
                 self.__result_text.insert(tk.END, "Vehicle Updated Successfully", "center")
                 self.__result_text.config(state=tk.DISABLED)
@@ -891,7 +788,6 @@ class ManageVehiclesTab:
         self.show_vehicle_tab_labels("update")
 
         self.__update_date_button.config(command=__update_book)
-        self.__update_date_button.place(relx=0.4, rely=0.3, anchor=tk.CENTER)
 
     def show_view_vehicles_ui(self):
         """
@@ -932,11 +828,3 @@ class ManageVehiclesTab:
         
         self.__update_vehicle_button = tk.Button(self.__vehicles_tab, text="Update Vehicle", justify=tk.CENTER, command=self.show_update_vehicle_ui)
         self.__update_vehicle_button.place(relx=0.6, rely=0.05, anchor=tk.CENTER)
-
-def main():
-    app = SDCApp("Smooth Driving College of Motoring Portal", 1200, 800)
-    app.mainloop()
-
-if __name__ == "__main__":
-    main()
-

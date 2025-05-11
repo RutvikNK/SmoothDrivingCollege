@@ -1,5 +1,5 @@
-from backend.connector import SQLConnector
-from backend.commands import InsertCommand, SelectCommand, DeleteCommand, UpdateCommand
+from backend.load.connector import SQLConnector
+from backend.load.commands import InsertCommand, SelectCommand, DeleteCommand, UpdateCommand
 
 class DatabaseExecutor:
     """

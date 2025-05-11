@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from backend.connector import SQLConnector
+from backend.load.connector import SQLConnector
 
 
 class Command(ABC):

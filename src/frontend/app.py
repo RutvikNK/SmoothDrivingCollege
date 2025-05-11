@@ -4,6 +4,7 @@ from tkinter import ttk
 from backend.load.executor import DatabaseExecutor
 from backend.load.connector import SQLConnector
 from admin_portal import AdminPortal
+from instructor_portal import InstructorPortal
 
 class SDCApp:
     """
@@ -11,20 +12,27 @@ class SDCApp:
     and managing the tabs for the application. Holds tabs for Books, Members, and Borrowings.
     """
     def __init__(self, app_name: str, window_width: int=500, window_height: int=500) -> None:
-        self.__root = tk.Tk()
-        self.__root.title(app_name)
-        self.set_window_size(window_width, window_height)
-        self.__notebook = ttk.Notebook(self.__root)
-
-        self.__db_exec: DatabaseExecutor
-        self.__username: str = ""
+        self.__app_name = app_name
+        self.__window_width = window_width
+        self.__window_height = window_height
         
         self.__admin_portal: AdminPortal
+        self.__instructors_tab: InstructorPortal
+        self.__logout_button: tk.Button
+    
+        self.__db_exec: DatabaseExecutor
+        self.__username: str = ""
+
+        self.__root = tk.Tk()
+        self.__root.title(self.__app_name)
+
+        self.app_home()
+
+    def app_home(self) -> None:
+        self.set_window_size(self.__window_width, self.__window_height)
+        self.__notebook = ttk.Notebook(self.__root)
 
         self.handle_login()
-        # self.__instructors_tab.create_vehicles_tab()c
-        # self.__instructors_tab.create_members_tab()
-        # self.__borrow_tab.create_borrow_tab()
         self.__notebook.pack(expand=1, fill="both")
 
     def set_window_size(self, width: int, height: int) -> None:
@@ -62,16 +70,20 @@ class SDCApp:
             error_label.config(text="Login successful", fg="green")
             error_label.pack()
 
+            username_entry.pack_forget()
+            password_entry.pack_forget()
+            username_label.pack_forget()
+            password_label.pack_forget()
+            login_button.pack_forget()
+            error_label.pack_forget()
+
             if self.__username == "admin_global":
-                username_entry.pack_forget()
-                password_entry.pack_forget()
-                username_label.pack_forget()
-                password_label.pack_forget()
-                login_button.pack_forget()
-                error_label.pack_forget()
-
                 self.__admin_portal = AdminPortal(self.__db_exec, self.__notebook)
+            elif self.__username == "instructor_global":
+                self.__instructors_tab = InstructorPortal(self.__db_exec, self.__notebook)
 
+            self.__logout_button = tk.Button(self.__root, text="Logout", command=self.handle_logout)
+            self.__logout_button.pack(side="top", anchor="ne")
 
         username_label = tk.Label(self.__notebook, text="Username")
         username_entry = tk.Entry(self.__notebook)
@@ -87,6 +99,14 @@ class SDCApp:
         login_button.pack()
 
         error_label = tk.Label(self.__notebook, text="", fg="red")
+
+    def handle_logout(self) -> None:
+        """
+        Handles the logout process. Closes the main window and opens the login window.
+        """
+        self.__notebook.pack_forget()
+        self.__logout_button.pack_forget()
+        self.app_home()
 
     def mainloop(self) -> None:
         """

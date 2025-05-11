@@ -29,6 +29,11 @@ def verify_email(email: str) -> bool:
     return True
 
 def verify_date(date: str) -> bool:
+    """
+    Verifies if a date is valid
+    :param date: str: The date to verify in the format YYYY-MM-DD
+    :return: bool: True if the date is valid, False otherwise
+    """
     try:
         year, month, day = date.split("-")
         year, month, day = int(year), int(month), int(day)
@@ -39,3 +44,40 @@ def verify_date(date: str) -> bool:
         return False
     
     return True
+
+def verify_time(time: str) -> bool:
+    """
+    Verifies if a time is valid
+    :param time: str: The time to verify in the format HH:MM:SS
+    :return: bool: True if the time is valid, False otherwise
+    """
+    try:
+        hour, minute, second = time.split(":")
+        hour, minute, second = int(hour), int(minute), int(second)
+    except ValueError:
+        return False
+    
+    if hour < 0 or hour > 23 or minute < 0 or minute > 59 or second < 0 or second > 59:
+        return False
+    
+    return True
+
+def verify_datetime(datetime: str) -> bool:
+    """
+    Verifies if a datetime is valid
+    :param datetime: str: The datetime to verify in the format YYYY-MM-DD HH:MM:SS
+    :return: bool: True if the datetime is valid, False otherwise
+    """
+    try:
+        date, time = datetime.split(" ")
+        return verify_date(date) and verify_time(time)
+    except ValueError:
+        return False
+
+def main():
+    date = "2023-10-01"
+    time = "12:30:00"
+    phone_number = "1234567890"
+
+if __name__ == "__main__":
+    main()

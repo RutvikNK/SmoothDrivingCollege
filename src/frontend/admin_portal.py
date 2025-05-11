@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 
 from backend.load.executor import DatabaseExecutor
-from backend.load.connector import SQLConnector
 from backend.data.sdc_data import (
     Employee,
     Office,
@@ -102,7 +101,7 @@ class ManageInstructorsTab:
             self.__update_email_button = tk.Button(self.__instructors_tab, text="Update Email")
             self.__update_email_button.place(relx=0.8, rely=0.37, anchor=tk.CENTER)
         elif self.__active_tab == "view":  # show view employee submenu
-            self.__table = ttk.Treeview(self.__instructors_tab, columns=("Name", "Gender", "Email Address", "Phone No.",  "Manager Name"), show="headings")
+            self.__table = ttk.Treeview(self.__instructors_tab, columns=("Name", "ID", "Gender", "Email Address", "Phone No.",  "Manager Name"), show="headings")
             self.__table.place(relx=0.5, rely=0.5, height=400, anchor=tk.CENTER)
         elif self.__active_tab == "delete":  # show delete employee submenu
             self.__emp_id_label = tk.Label(self.__instructors_tab, text="Employee ID*: ")
@@ -264,6 +263,7 @@ class ManageInstructorsTab:
 
         # set the headings for the table's columns
         self.__table.heading("Name", text="Name")
+        self.__table.heading("ID", text="ID")
         self.__table.heading("Gender", text="Gender")
         self.__table.heading("Email Address", text="Email Address")
         self.__table.heading("Phone No.", text="Phone No.")
@@ -414,7 +414,7 @@ class ManageClientsTab:
             self.__update_email_button = tk.Button(self.__clients_tab, text="Update Email")
             self.__update_email_button.place(relx=0.8, rely=0.37, anchor=tk.CENTER)
         elif self.__active_tab == "view":  # show view client submenu
-            self.__table = ttk.Treeview(self.__clients_tab, columns=("Client Name", "Gender", "Instructor Name", "Registered At"), show="headings")
+            self.__table = ttk.Treeview(self.__clients_tab, columns=("Client Name", "ID", "Gender", "Instructor Name", "Registered At"), show="headings")
             self.__table.place(relx=0.5, rely=0.5, height=400, anchor=tk.CENTER)
 
         # show the result text box that holds a message for any action performed by the user
@@ -574,6 +574,7 @@ class ManageClientsTab:
 
         # set the headings for the table's columns
         self.__table.heading("Client Name", text="Client Name")
+        self.__table.heading("ID", text="ID")
         self.__table.heading("Gender", text="Gender")
         self.__table.heading("Instructor Name", text="Instructor Name")
         self.__table.heading("Registered At", text="Registered At")

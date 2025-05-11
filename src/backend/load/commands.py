@@ -116,12 +116,18 @@ class DeleteCommand(Command):
         Executes the delete command based on the class' attributes
         """
         keys = list(self.__data.keys())
-        query = f"DELETE FROM {self.__table_name} WHERE {keys[0]} = "
+        query = f"DELETE FROM {self.__table_name} WHERE "
 
-        if isinstance(self.__data[keys[0]], int) or isinstance(self.__data[keys[0]], float):
-            query += f"{self.__data[keys[0]]}"
+        for i in range(len(keys) - 1):
+            if isinstance(self.__data[keys[i]], int) or isinstance(self.__data[keys[i]], float):
+                query += f"{keys[i]} = {self.__data[keys[i]]} AND "
+            else:
+                query += f"{keys[i]} = '{self.__data[keys[i]]}' AND "
         else:
-            query += f"'{self.__data[keys[0]]}'"
+            if isinstance(self.__data[keys[-1]], int) or isinstance(self.__data[keys[-1]], float):
+                query += f"{keys[-1]} = {self.__data[keys[-1]]}"
+            else:
+                query += f"{keys[-1]} = '{self.__data[keys[-1]]}'"
 
         print(query)
         return self.__obj.execute(query)

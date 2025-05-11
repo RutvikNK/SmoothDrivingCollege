@@ -1,4 +1,10 @@
 from pydantic import BaseModel
+from enum import Enum
+
+class MeetingType(Enum):
+    LESSON = "Lesson"
+    WRITTEN_EXAM = "Exam: Written"
+    DRIVING_EXAM = "Exam: Behind the Wheel"
 
 class Office(BaseModel):
     office_street_address: str
@@ -14,7 +20,7 @@ class Employee(BaseModel):
     emp_manager_id: int
 
 class Interview(BaseModel):
-    interv_clinet_id: int
+    interv_client_id: int
     interv_inst_id: int
     interv_location_id: int
     interv_location: str
@@ -29,8 +35,8 @@ class Meeting(BaseModel):
     meeting_start: str
     meeting_end: str
     meeting_type: str
-    meeting_note: str | None = None
-    meeting_mileage: int
+    meeting_notes: str = ""
+    meeting_mileage: int = 0
 
 class Client(BaseModel):
     client_name: str

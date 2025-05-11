@@ -181,7 +181,8 @@ class ManageSessionsTab:
             self.__add_session_button.place_forget()
             self.__result_text.place_forget()
         elif self.__active_tab == "view":  # hide view meeting submenu
-            self.__table.place_forget()
+            if self.__session_type:
+                self.__table.place_forget()
             self.__inst_id_label.place_forget()
             self.__inst_id_entry.place_forget()
             self.__view_meeting_button.place_forget()

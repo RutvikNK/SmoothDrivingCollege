@@ -115,7 +115,7 @@ class SDCApp:
         self.__root.mainloop()
 
 def main():
-    app = SDCApp("Smooth Driving College of Motoring Portal", 1200, 800)
+    app = SDCApp("Smooth Driving College of Motoring Portal", 1400, 800)
     app.mainloop()
 
 if __name__ == "__main__":

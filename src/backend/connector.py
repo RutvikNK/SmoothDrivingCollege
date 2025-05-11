@@ -40,6 +40,19 @@ class SQLConnector:
             print("Query execution failed\n")
             return False
 
+    def call_proc(self, proc_name: str, params: list):
+        cursor = self.db.cursor(buffered=True)
+        try:
+            result = cursor.callproc(proc_name, params)
+            print("Procedure call successful\n")
+            self.commit()
+            return result
+        except Exception as e:
+            self.rollback()
+            print(f"{e}")
+            print("Procedure call failed\n")
+            return False
+
     def commit(self) -> None:
         self.db.commit()
 

@@ -1,5 +1,5 @@
-from connector import SQLConnector
-from commands import InsertCommand, SelectCommand
+from backend.connector import SQLConnector
+from backend.commands import InsertCommand, SelectCommand, DeleteCommand, UpdateCommand
 
 class DatabaseExecutor:
     """
@@ -9,13 +9,15 @@ class DatabaseExecutor:
         self.__db = db
         self.__insert_command: InsertCommand = InsertCommand(db)
         self.__select_command: SelectCommand = SelectCommand(db)
+        self.__delete_command: DeleteCommand = DeleteCommand(db)
+        self.__update_command: UpdateCommand = UpdateCommand(db)
 
     def insert_row(self, table_name: str, data: dict):
         """
         Insert row(s) into a table
         """
         self.__insert_command.set_command(table_name, data)
-        self.__insert_command.execute()
+        return self.__insert_command.execute()
 
     def select_rows(self, table_name: str, fields: list[str], condition: dict):
         """
@@ -23,35 +25,23 @@ class DatabaseExecutor:
         """
         self.__select_command.set_command(table_name, fields, condition)
         return self.__select_command.execute()
+    
+    def update_row(self, table_name: str, data: dict):
+        """
+        Update rows in a table
+        """
+        self.__update_command.set_command(table_name, data)
+        return self.__update_command.execute()
 
-    def update_row(self, table_name: str, data: dict, conditions: dict):
+    def delete_row(self, table_name: str, data: dict):
         """
-        Update a row in a table
+        Delete rows from a table
         """
-        query = "UPDATE " + table_name + " SET "
-        for key, value in data.items():
-            if isinstance(value, str):
-                query += key + " = '" + value + "', "
-            else:
-                query += key + " = " + str(value) + ", "
-        
-        query = query[:-2] + " WHERE "
-        for key, value in conditions.items():
-            query += key + " = " + str(value) + " AND "
-        query = query[:-5]
-
-        return self.__db.execute(query)
-
-    def delete_row(self, table_name: str, conditions: dict):
-        """
-        Delete a row from a table
-        """
-        query = "DELETE FROM " + table_name + " WHERE "
-        for key, value in conditions.items():
-            query += key + " = " + str(value) + " AND "
-        query = query[:-5]
-        
-        return self.__db.execute(query)
+        self.__delete_command.set_command(table_name, data)
+        return self.__delete_command.execute()
+    
+    def call_proc(self, proc_name: str, params: list):
+        return self.__db.call_proc(proc_name, params)
 
     def retrieve_all(self, table_name: str):
         return self.__db.retrieve_all(table_name)

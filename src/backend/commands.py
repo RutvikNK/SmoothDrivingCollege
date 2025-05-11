@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from connector import SQLConnector
+from backend.connector import SQLConnector
+
 
 class Command(ABC):
     """
@@ -46,9 +47,11 @@ class InsertCommand(Command):
             query = f"{query[:-2]}"
         
         print(query)  # print to debug
-        self.__obj.execute(query)  # execute
+        result = self.__obj.execute(query)  # execute
+        if isinstance(result, bool):
+            return result
 
-    def set_command(self, table_name: str, data: dict) -> None:
+    def set_command(self, table_name: str, data) -> None:
         """
         Allows setting the command attributes: table name and insertion data
         """
@@ -86,8 +89,6 @@ class SelectCommand(Command):
                     query += f"{k} = {v}"
                 else:
                     query += f'{k} = "{v}"'
-                query += " AND "
-            query = query[:-5]  # remove last AND
 
         print(query)
         result = self.__obj.execute(query)
@@ -114,18 +115,46 @@ class DeleteCommand(Command):
         """
         Executes the delete command based on the class' attributes
         """
-        query = "DELETE FROM " + self.__table_name + " WHERE "
-        for key, value in self.__data.items():
-            query += key + " = " + str(value) + " AND "
-        query = query[:-5]
+        keys = list(self.__data.keys())
+        query = f"DELETE FROM {self.__table_name} WHERE {keys[0]} = "
+
+        if isinstance(self.__data[keys[0]], int) or isinstance(self.__data[keys[0]], float):
+            query += f"{self.__data[keys[0]]}"
+        else:
+            query += f"'{self.__data[keys[0]]}'"
+
         print(query)
         return self.__obj.execute(query)
 
-    def set_command(self):
+    def set_command(self, table_name: str, data: dict) -> None:
         """
         Allows ssetting the attribtues of the delete command
         """
-        self.__table_name = input("Enter the name of the table you want to delete from: ")
+        self.__table_name = table_name
+        self.__data = data
 
-        condition = input("Enter the column and its value for the delete condition, separate by a semicolon (;). Include \"\" for any TEXT data types!: ")
-        self.__data[condition.split(";")[0]] = condition.split(";")[1]
+class UpdateCommand(Command):
+    """
+    Update command, handles updating rows in the given table.
+    """
+    def __init__(self, obj: SQLConnector, table_name: str="", data: dict={}) -> None:
+        self.__obj = obj
+        self.__table_name = table_name
+        self.__data = data
+
+    def execute(self):
+        """
+        Executes the update query based on the given class' attributes
+        """
+        keys = list(self.__data.keys())  # get the keys from the dictionary, assuming first key is column to update and second key is condtional column
+        query = f"UPDATE {self.__table_name} SET {keys[0]} = {self.__data[keys[0]]} WHERE {keys[1]} = {self.__data[keys[1]]}"
+
+        print(query)
+        return self.__obj.execute(query)
+
+    def set_command(self, table_name: str, data: dict) -> None:
+        """
+        Allows setting the attributes for the update command
+        """
+        self.__data = data
+        self.__table_name = table_name

@@ -75,8 +75,6 @@ class ManageSessionsTab:
         self.__clear_dynamic_fields()
         self.__session_type = self.__session_type_var.get()
         if self.__active_tab == "add":
-            # Clear any existing dynamic fields
-
             self.__client_id_label = tk.Label(self.__sessions_tab, text="Client ID: ")
             self.__client_id_label.place(relx=0.2, rely=0.2, anchor=tk.CENTER)
             self.__client_id_entry = tk.Entry(self.__sessions_tab)
@@ -113,7 +111,6 @@ class ManageSessionsTab:
                 self.__vehicle_license_entry = tk.Entry(self.__sessions_tab)
                 self.__vehicle_license_entry.place(relx=0.8, rely=0.4, anchor=tk.CENTER)
 
-
                 self.__end_label = tk.Label(self.__sessions_tab, text="End Time: ")
                 self.__end_label.place(relx=0.6, rely=0.5, anchor=tk.CENTER)
                 self.__end_entry = tk.Entry(self.__sessions_tab)
@@ -130,7 +127,6 @@ class ManageSessionsTab:
                 )
                 self.__type_dropdown.place(relx=0.6, rely=0.6, anchor=tk.CENTER)
         elif self.__active_tab == "view":
-            
             self.__inst_id_label = tk.Label(self.__sessions_tab, text="Instructor ID: ")
             self.__inst_id_label.place(relx=0.37, rely=0.2, anchor=tk.CENTER)
             self.__inst_id_entry = tk.Entry(self.__sessions_tab)
@@ -141,7 +137,22 @@ class ManageSessionsTab:
             elif self.__session_type == "Interview":
                 self.__table = ttk.Treeview(self.__sessions_tab, columns=("Client", "Instructor", "Date"), show="headings")
                 self.__table.place(relx=0.5, rely=0.5, height=400, anchor=tk.CENTER)
-    
+        elif self.__active_tab == "delete":
+            self.__client_id_label = tk.Label(self.__sessions_tab, text="Client ID*: ")
+            self.__client_id_label.place(relx=0.35, rely=0.2, anchor=tk.CENTER)
+            self.__client_id_entry = tk.Entry(self.__sessions_tab)
+            self.__client_id_entry.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+            self.__inst_id_label = tk.Label(self.__sessions_tab, text="Instructor ID*: ")
+            self.__inst_id_label.place(relx=0.35, rely=0.3, anchor=tk.CENTER)
+            self.__inst_id_entry = tk.Entry(self.__sessions_tab)
+            self.__inst_id_entry.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+
+            self.__meeting_start_label = tk.Label(self.__sessions_tab, text="Meeting Start Time*: ")
+            self.__meeting_start_label.place(relx=0.35, rely=0.4, anchor=tk.CENTER)
+            self.__meeting_start_entry = tk.Entry(self.__sessions_tab)
+            self.__meeting_start_entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+            
     def __clear_dynamic_fields(self):
         """
         Clears all dynamically created fields from the UI.
@@ -405,6 +416,10 @@ class ManageSessionsTab:
         self.__delete_meeting_button.place(relx=0.7, rely=0.05, anchor=tk.CENTER)
 
     def __handle_session_type_change(self):
+        """
+        Handles updates made to the session type dropdown menu. 
+        Updates field visibility based on the type selected.
+        """
         self.__session_type_label = tk.Label(self.__sessions_tab, text="Session Type: ")
         self.__session_type_label.place(relx=0.3, rely=0.125, anchor=tk.CENTER)
         self.__session_type_var = tk.StringVar()

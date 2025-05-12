@@ -440,6 +440,8 @@ class ManageClientsTab:
             self.__client_emergency_contact_phone_entry.place_forget()
             self.__client_age_label.place_forget()
             self.__client_age_entry.place_forget()
+            self.__inst_id_label.place_forget()
+            self.__inst_id_entry.place_forget()
             self.__add_client_button.place_forget()
             self.__result_text.place_forget()
         elif self.__active_tab == "update":  # hide update book submenu
